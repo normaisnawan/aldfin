@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Journal Entry - FinCore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <nav id="sidebar">
+        <!-- Brand Logo -->
+        <div class="sidebar-brand-section">
+            <div class="brand-logo">
+                <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <span class="brand-name">Aldila</span>
+        </div>
+        
+        <div class="px-3 mb-2"><span class="sidebar-label">Main Menu</span></div>
+
+        <ul class="list-unstyled components">
+            <li><a href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li>
+                <a href="#masterSubmenu" data-bs-toggle="collapse" class="dropdown-toggle"><i class="bi bi-database"></i> Master Data</a>
+                <ul class="collapse list-unstyled" id="masterSubmenu">
+                    <li><a href="formula.html">Formula</a></li>
+                    <li><a href="customers.html">Customers</a></li>
+                    <li><a href="vendors.html">Vendors</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#transSubmenu" data-bs-toggle="collapse" class="dropdown-toggle active" aria-expanded="true"><i class="bi bi-receipt"></i> Transactions</a>
+                <ul class="collapse show list-unstyled" id="transSubmenu">
+                    <li><a href="rencana-produksi.html" class="active">Rencana Produksi</a></li>
+                    <li><a href="sales.html">Sales / Invoices</a></li>
+                    <li><a href="purchase.html">Purchases</a></li>
+                    <li><a href="expenses.html">Expenses</a></li>
+                </ul>
+            </li>
+            <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a></li>
+            <li><a href="settings.html"><i class="bi bi-gear"></i> Settings</a></li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <!-- New Topbar Design -->
+        <nav class="navbar navbar-custom">
+            <div class="d-flex align-items-center">
+                <button type="button" id="sidebarCollapse" class="btn btn-link text-dark p-0 me-3"><i class="bi bi-list fs-4"></i></button>
+                <h5 class="mb-0 fw-bold">Jurnal Umum</h5>
+            </div>
+            <div class="search-wrapper">
+                <i class="bi bi-search text-muted"></i>
+                <input type="text" placeholder="Search...">
+                <span class="search-badge">⌘ K</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="top-icon-btn"><i class="bi bi-envelope"></i><span class="notification-dot"></span></div>
+                <div class="top-icon-btn me-4"><i class="bi bi-bell"></i><span class="notification-dot"></span></div>
+                <div class="profile-widget">
+                    <img src="assets/img/profile.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Pevita+Sarma&background=random&color=fff'" alt="Profile">
+                    <div class="ms-2 d-none d-lg-block">
+                        <div class="fw-bold fs-6 lh-1">Norma Isnawan</div>
+                        <small class="text-muted">Admin</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="main-container">
+            <h4 class="mb-4">Buat Rencana Produksi</h4>
+            
+            <!-- INPUT SECTION -->
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-pencil-square me-2"></i>Buat Rencana Baru</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <!-- CUSTOMER SELECTION -->
+                        <div class="col-md-3">
+                            <label class="form-label">Customer (Untuk Siapa)</label>
+                            <select id="customerSelect" class="form-select">
+                                <option value="">-- Pilih Customer --</option>
+                                <!-- Filled by JS -->
+                            </select>
+                        </div>
+
+                        <!-- SUPPLIER SELECTION (Moved Here) -->
+                        <div class="col-md-3">
+                            <label class="form-label">Supplier (Sumber Bahan)</label>
+                            <select id="supplierSelect" class="form-select">
+                                <option value="">-- Pilih Supplier --</option>
+                                <!-- Filled by JS -->
+                            </select>
+                        </div>
+
+                        <!-- MENU SELECTION -->
+                        <div class="col-md-3">
+                            <label class="form-label">Pilih Menu / Formula</label>
+                            <select id="menuSelect" class="form-select">
+                                <option value="">-- Pilih Formula --</option>
+                                <!-- Filled by JS -->
+                            </select>
+                        </div>
+
+                        <!-- PORSI & DATE -->
+                        <div class="col-md-1">
+                            <label class="form-label">Porsi</label>
+                            <input type="number" id="qtyPorsi" class="form-control px-2" value="100" min="1">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" id="tglProduksi" class="form-control px-2">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100" id="btnHitung">
+                                <i class="bi bi-calculator me-1"></i> Hitung Kebutuhan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESULT SECTION (Hidden by default) -->
+            <div class="card mb-4" id="resultCard" style="display:none;">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="m-0 fw-bold text-success"><i class="bi bi-cart-check me-2"></i>Kebutuhan Bahan Baku</h6>
+                        <small class="text-muted" id="supplierInfoText">Supplier: -</small>
+                    </div>
+                    <span id="labelSummary" class="badge badge-soft-primary fs-6 fw-normal px-3 py-2"></span>
+                </div>
+                <div class="card-body p-0 table-responsive">
+                    <table class="table table-bordered mb-0 align-middle" id="calcTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%">Nama Bahan</th>
+                                <th style="width: 20%" class="text-center">Qty/Porsi</th>
+                                <th style="width: 20%" class="text-center">Total Kebutuhan</th>
+                                <th style="width: 20%" class="text-center">Satuan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white text-end py-3">
+                    <button class="btn btn-outline-secondary me-2" onclick="document.getElementById('resultCard').style.display='none'">Batal</button>
+                    <button class="btn btn-success" id="btnSimpanRencana">
+                        <i class="bi bi-save me-1"></i> Simpan Rencana Produksi
+                    </button>
+                </div>
+            </div>
+
+            <!-- HISTORY SECTION -->
+            <h5 class="mb-3 fw-bold text-dark">Riwayat Rencana Produksi</h5>
+            <div class="card">
+                <div class="card-body p-0 table-responsive">
+                    <table class="table table-hover mb-0 align-middle" id="planHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>ID Rencana</th>
+                                <th>Tanggal</th>
+                                <th>Customer</th>
+                                <th>Supplier</th>
+                                <th>Menu</th>
+                                <th class="text-center">Porsi</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+    // --- 1. MOCK DATA ---
+    
+    // Formulas (Recipes)
+    const formulas = [
+        {
+            id: 'M1', 
+            name: 'Paket Ayam Bakar Madu', 
+            ingredients: [
+                {name:'Daging Ayam', qty:0.25, unit:'kg'}, 
+                {name:'Madu Murni', qty:20, unit:'ml'}, 
+                {name:'Arang Batok', qty:100, unit:'gram'},
+                {name:'Lalapan', qty:1, unit:'paket'}
+            ]
+        },
+        {
+            id: 'M2', 
+            name: 'Nasi Goreng Seafood', 
+            ingredients: [
+                {name:'Beras Premium', qty:0.15, unit:'kg'}, 
+                {name:'Udang', qty:50, unit:'gram'}, 
+                {name:'Cumi', qty:50, unit:'gram'}, 
+                {name:'Telur Ayam', qty:1, unit:'butir'}
+            ]
+        },
+        {
+            id: 'M3', 
+            name: 'Es Kopi Susu Gula Aren', 
+            ingredients: [
+                {name:'Biji Kopi Robusta', qty:18, unit:'gram'}, 
+                {name:'Susu UHT', qty:120, unit:'ml'}, 
+                {name:'Gula Aren Cair', qty:25, unit:'ml'}
+            ]
+        }
+    ];
+
+    // Customers
+    const customers = [
+        {id: 'C1', name: 'Walk-in / Umum'},
+        {id: 'C2', name: 'PT. Teknologi Maju (Catering)'},
+        {id: 'C3', name: 'Event Pernikahan Bpk. Budi'},
+        {id: 'C4', name: 'Stok Toko Cabang A'}
+    ];
+
+    // Suppliers
+    const suppliers = [
+        {id: 'S1', name: 'Pasar Induk Sejahtera'},
+        {id: 'S2', name: 'Agen Telur & Ayam Berkah'},
+        {id: 'S3', name: 'UD. Sayur Segar'},
+        {id: 'S4', name: 'Grosir Sembako Makmur'},
+        {id: 'S5', name: 'Supplier Kopi Nusantara'}
+    ];
+
+    // --- 2. INITIALIZATION ---
+
+    document.getElementById('tglProduksi').valueAsDate = new Date();
+    let currentCalculation = null;
+
+    // Populate Select Options
+    function initDropdowns() {
+        const menuSelect = document.getElementById('menuSelect');
+        const customerSelect = document.getElementById('customerSelect');
+        const supplierSelect = document.getElementById('supplierSelect');
+
+        formulas.forEach(f => {
+            let opt = document.createElement('option');
+            opt.value = f.id;
+            opt.textContent = f.name;
+            menuSelect.appendChild(opt);
+        });
+
+        customers.forEach(c => {
+            let opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.name;
+            customerSelect.appendChild(opt);
+        });
+
+        suppliers.forEach(s => {
+            let opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name;
+            supplierSelect.appendChild(opt);
+        });
+    }
+
+    // --- 3. CORE LOGIC ---
+
+    // Event: Click Hitung
+    document.getElementById('btnHitung').addEventListener('click', () => {
+        const menuId = document.getElementById('menuSelect').value;
+        const customerId = document.getElementById('customerSelect').value;
+        const supplierId = document.getElementById('supplierSelect').value;
+        const porsi = parseInt(document.getElementById('qtyPorsi').value) || 0;
+        const date = document.getElementById('tglProduksi').value;
+
+        // Validation
+        if (!menuId || !customerId || !supplierId || porsi <= 0 || !date) {
+            alert("Harap lengkapi semua form input (Customer, Supplier, Menu, Porsi, Tanggal).");
+            return;
+        }
+
+        // Find Data
+        const selectedFormula = formulas.find(f => f.id === menuId);
+        const selectedCustomer = customers.find(c => c.id === customerId);
+        const selectedSupplier = suppliers.find(s => s.id === supplierId);
+
+        // Calculate Ingredients
+        const calculatedIngredients = selectedFormula.ingredients.map(item => {
+            return {
+                ...item,
+                totalQty: item.qty * porsi
+            };
+        });
+
+        // Store temporary state
+        currentCalculation = {
+            menuId: selectedFormula.id,
+            menuName: selectedFormula.name,
+            customerId: selectedCustomer.id,
+            customerName: selectedCustomer.name,
+            supplierId: selectedSupplier.id,
+            supplierName: selectedSupplier.name,
+            porsi: porsi,
+            date: date,
+            items: calculatedIngredients
+        };
+
+        // Render Result Table
+        const tbody = document.querySelector('#calcTable tbody');
+        tbody.innerHTML = '';
+
+        calculatedIngredients.forEach((item) => {
+            const row = `
+                <tr>
+                    <td class="fw-bold">${item.name}</td>
+                    <td class="text-center">${item.qty}</td>
+                    <td class="text-center fw-bold text-primary">${item.totalQty.toLocaleString()}</td>
+                    <td class="text-center text-muted">${item.unit}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+        // Update UI Info
+        document.getElementById('supplierInfoText').innerText = `Supplier Terpilih: ${selectedSupplier.name}`;
+        document.getElementById('labelSummary').innerHTML = 
+            `<i class="bi bi-person-badge"></i> ${selectedCustomer.name} &nbsp;|&nbsp; <i class="bi bi-clipboard"></i> ${selectedFormula.name}`;
+        
+        // Show Card
+        document.getElementById('resultCard').style.display = 'block';
+        // Scroll to result
+        document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Event: Click Simpan
+    document.getElementById('btnSimpanRencana').addEventListener('click', () => {
+        if (!currentCalculation) return;
+
+        // Create Final Object
+        const newPlan = {
+            id: 'RP-' + Date.now().toString().slice(-6),
+            ...currentCalculation,
+            status: 'Planned'
+        };
+
+        // Save to LocalStorage
+        const history = JSON.parse(localStorage.getItem('prod_plans') || '[]');
+        history.push(newPlan);
+        localStorage.setItem('prod_plans', JSON.stringify(history));
+
+        // UI Feedback
+        alert('Rencana Produksi Berhasil Disimpan!');
+        document.getElementById('resultCard').style.display = 'none';
+        
+        // Reset Inputs (Opsional, user mungkin ingin input ulang dengan cepat)
+        document.getElementById('menuSelect').value = "";
+        document.getElementById('customerSelect').value = "";
+        document.getElementById('supplierSelect').value = "";
+        document.getElementById('qtyPorsi').value = "100";
+
+        // Reload Table
+        loadHistory();
+    });
+
+    // Load History Table
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('prod_plans') || '[]');
+        const tbody = document.querySelector('#planHistoryTable tbody');
+        tbody.innerHTML = '';
+
+        if (history.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Belum ada data rencana produksi.</td></tr>';
+            return;
+        }
+
+        // Sort descending (newest first)
+        history.reverse().forEach(plan => {
+            const row = `
+                <tr>
+                    <td><span class="badge bg-secondary font-monospace">${plan.id}</span></td>
+                    <td>${plan.date}</td>
+                    <td class="fw-bold text-dark">${plan.customerName}</td>
+                    <td><span class="text-muted"><i class="bi bi-shop"></i> ${plan.supplierName || '-'}</span></td>
+                    <td>${plan.menuName}</td>
+                    <td class="text-center">${plan.porsi}</td>
+                    <td><span class="badge badge-soft-success">Siap Proses</span></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    // Run Init
+    initDropdowns();
+    loadHistory();
+
+</script>
+</body>
+</html>
