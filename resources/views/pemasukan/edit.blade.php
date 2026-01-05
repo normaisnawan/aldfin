@@ -1,0 +1,87 @@
+@extends('layouts.app')
+
+@section('content')
+  <div class="container-fluid p-4">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h5>Edit Pemasukan</h5>
+          <a href="{{ route('pemasukan.index') }}" class="btn btn-light btn-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4 me-2"></i> Kembali
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        @if ($errors->any())
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
+
+        <form action="{{ route('pemasukan.update', $pemasukan->id) }}" method="POST">
+          @csrf
+          @method('PUT')
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="tanggal" class="form-label">Tanggal</label>
+              <input type="date" class="form-control" id="tanggal" name="tanggal"
+                value="{{ old('tanggal', $pemasukan->tanggal->format('Y-m-d')) }}" required>
+            </div>
+            <div class="col-md-6">
+              <label for="jumlah" class="form-label">Jumlah (Rp)</label>
+              <input type="number" class="form-control" id="jumlah" name="jumlah"
+                value="{{ old('jumlah', $pemasukan->jumlah) }}" placeholder="0" step="1" required>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="akun_id" class="form-label">Akun</label>
+              <select class="form-select" id="akun_id" name="akun_id" required>
+                <option value="">Pilih Akun</option>
+                @foreach ($akuns as $akun)
+                  <option value="{{ $akun->id }}" {{ old('akun_id', $pemasukan->akun_id) == $akun->id ? 'selected' : '' }}>
+                    {{ $akun->kode_akun }} - {{ $akun->nama_akun }}
+                  </option>
+                @endforeach
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="outlet_id" class="form-label">Outlet</label>
+              <select class="form-select" id="outlet_id" name="outlet_id" required>
+                <option value="">Pilih Outlet</option>
+                @foreach ($outlets as $outlet)
+                  <option value="{{ $outlet->id }}" {{ old('outlet_id', $pemasukan->outlet_id) == $outlet->id ? 'selected' : '' }}>
+                    {{ $outlet->nama }}
+                  </option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan</label>
+            <textarea class="form-control" id="keterangan" name="keterangan" rows="3"
+              placeholder="Keterangan pemasukan...">{{ old('keterangan', $pemasukan->keterangan) }}</textarea>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="save" class="w-4 h-4 me-2"></i> Update
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('scripts')
+  <script>
+    lucide.createIcons();
+  </script>
+@endsection

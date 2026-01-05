@@ -11,4 +11,9 @@ class Outlet extends Model
   use HasFactory, SoftDeletes;
 
   protected $fillable = ['nama', 'alamat', 'telepon'];
+
+  public function transaksiKeuangans()
+  {
+    return $this->hasMany(TransaksiKeuangan::class);
+  }
 }

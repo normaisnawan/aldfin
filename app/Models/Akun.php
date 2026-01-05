@@ -15,4 +15,9 @@ class Akun extends Model
         'tipe_akun',
         'deskripsi',
     ];
+
+    public function transaksiKeuangans()
+    {
+        return $this->hasMany(TransaksiKeuangan::class);
+    }
 }
