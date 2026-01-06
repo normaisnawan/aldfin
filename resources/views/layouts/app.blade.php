@@ -28,7 +28,7 @@
             <div class="sidebar-header">
                 <div class="brand-wrapper">
                     <div class="logo-box">
-                        <i data-lucide="box" class="text-white" style="width: 20px;"></i>
+                        <i data-lucide="wheat" class="text-white" style="width: 20px;"></i>
                     </div>
                     <span class="brand-text">Bogalova</span>
                 </div>
