@@ -38,12 +38,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Pemasukan routes
     Route::get('pemasukan/{pemasukan}/print', [\App\Http\Controllers\PemasukanController::class, 'print'])->name('pemasukan.print');
+    Route::delete('pemasukan/{pemasukan}/lampiran', [\App\Http\Controllers\PemasukanController::class, 'deleteLampiran'])->name('pemasukan.delete-lampiran');
     Route::resource('pemasukan', \App\Http\Controllers\PemasukanController::class);
 
     // Pengeluaran routes
     Route::get('pengeluaran/{pengeluaran}/payment', [\App\Http\Controllers\PengeluaranController::class, 'payment'])->name('pengeluaran.payment');
     Route::post('pengeluaran/{pengeluaran}/process-payment', [\App\Http\Controllers\PengeluaranController::class, 'processPayment'])->name('pengeluaran.process-payment');
     Route::get('pengeluaran/{pengeluaran}/print', [\App\Http\Controllers\PengeluaranController::class, 'print'])->name('pengeluaran.print');
+    Route::delete('pengeluaran/{pengeluaran}/lampiran', [\App\Http\Controllers\PengeluaranController::class, 'deleteLampiran'])->name('pengeluaran.delete-lampiran');
     Route::resource('pengeluaran', \App\Http\Controllers\PengeluaranController::class);
 
     // Laporan routes

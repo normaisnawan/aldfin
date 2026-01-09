@@ -10,6 +10,7 @@ use App\Models\Outlet;
 use App\Models\Peruntukan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PengeluaranController extends Controller
 {
@@ -61,7 +62,14 @@ class PengeluaranController extends Controller
       'peruntukan_id' => 'nullable|exists:peruntukans,id',
       'jumlah' => 'required|numeric',
       'keterangan' => 'nullable|string',
+      'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:5120',
     ]);
+
+    // Handle file upload
+    $lampiranPath = null;
+    if ($request->hasFile('lampiran')) {
+      $lampiranPath = $request->file('lampiran')->store('lampiran/pengeluaran', 'public');
+    }
 
     Pengeluaran::create([
       'nomor_transaksi' => Pengeluaran::generateNomorTransaksi(),
@@ -72,6 +80,7 @@ class PengeluaranController extends Controller
       'user_id' => Auth::id(),
       'jumlah' => $request->jumlah,
       'keterangan' => $request->keterangan,
+      'lampiran' => $lampiranPath,
       'status' => 'unpaid',
     ]);
 
@@ -125,16 +134,28 @@ class PengeluaranController extends Controller
       'peruntukan_id' => 'nullable|exists:peruntukans,id',
       'jumlah' => 'required|numeric',
       'keterangan' => 'nullable|string',
+      'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:5120',
     ]);
 
-    $pengeluaran->update([
+    $updateData = [
       'tanggal' => $request->tanggal,
       'akun_id' => $request->akun_id,
       'outlet_id' => $request->outlet_id,
       'peruntukan_id' => $request->peruntukan_id,
       'jumlah' => $request->jumlah,
       'keterangan' => $request->keterangan,
-    ]);
+    ];
+
+    // Handle file upload
+    if ($request->hasFile('lampiran')) {
+      // Delete old file if exists
+      if ($pengeluaran->lampiran) {
+        Storage::disk('public')->delete($pengeluaran->lampiran);
+      }
+      $updateData['lampiran'] = $request->file('lampiran')->store('lampiran/pengeluaran', 'public');
+    }
+
+    $pengeluaran->update($updateData);
 
     return redirect()->route('pengeluaran.index')
       ->with('success', 'Pengeluaran berhasil diperbarui.');
@@ -226,5 +247,24 @@ class PengeluaranController extends Controller
     $pengeluaran->load(['akun', 'outlet', 'peruntukan']);
     $title = $this->title;
     return view('pengeluaran.print', compact('pengeluaran', 'title'));
+  }
+
+  /**
+   * Delete lampiran from pengeluaran.
+   */
+  public function deleteLampiran(Pengeluaran $pengeluaran)
+  {
+    // Block delete lampiran if already paid
+    if ($pengeluaran->isPaid()) {
+      return redirect()->back()->with('error', 'Lampiran pengeluaran yang sudah dibayar tidak dapat dihapus.');
+    }
+
+    if ($pengeluaran->lampiran) {
+      Storage::disk('public')->delete($pengeluaran->lampiran);
+      $pengeluaran->update(['lampiran' => null]);
+      return redirect()->back()->with('success', 'Lampiran berhasil dihapus.');
+    }
+
+    return redirect()->back()->with('error', 'Tidak ada lampiran yang dapat dihapus.');
   }
 }

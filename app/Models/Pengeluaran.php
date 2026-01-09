@@ -19,6 +19,7 @@ class Pengeluaran extends Model
     'user_id',
     'jumlah',
     'keterangan',
+    'lampiran',
     'status',
     'paid_at',
     'transaksi_keuangan_id',

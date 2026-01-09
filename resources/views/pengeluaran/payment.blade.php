@@ -59,6 +59,17 @@
                     <td class="text-muted">Keterangan</td>
                     <td>{{ $pengeluaran->keterangan ?? '-' }}</td>
                   </tr>
+                  @if ($pengeluaran->lampiran)
+                    <tr>
+                      <td class="text-muted">Lampiran</td>
+                      <td>
+                        <a href="{{ asset('storage/' . $pengeluaran->lampiran) }}" target="_blank"
+                          class="btn btn-sm btn-outline-primary">
+                          <i data-lucide="paperclip" class="w-4 h-4 me-1"></i> Lihat Lampiran
+                        </a>
+                      </td>
+                    </tr>
+                  @endif
                 </table>
               </div>
             </div>
@@ -100,6 +111,22 @@
         cancelButtonText: 'Batal'
       }).then((result) => {
         if (result.isConfirmed) {
+          // Show loading
+          const btn = document.getElementById('btnConfirmPayment');
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memproses...';
+
+          Swal.fire({
+            title: 'Memproses Pembayaran',
+            text: 'Mohon tunggu...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
           document.getElementById('paymentForm').submit();
         }
       });

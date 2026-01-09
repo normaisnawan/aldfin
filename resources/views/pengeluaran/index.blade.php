@@ -37,13 +37,13 @@
                 <th class="text-end">Jumlah</th>
                 <th>Status</th>
                 <th>Peruntukan</th>
-                <th width="200px">Aksi</th>
+                <th width="220px">Aksi</th>
               </tr>
             </thead>
             <tbody>
               @foreach ($pengeluarans as $pengeluaran)
                 <tr>
-                  <td>{{ $pengeluaran->nomor_transaksi }}</td>
+                  <td><code>{{ $pengeluaran->nomor_transaksi }}</code></td>
                   <td>{{ $pengeluaran->tanggal->format('d/m/Y') }}</td>
                   <td>
                     <span class="badge bg-warning text-dark">{{ $pengeluaran->akun->kode_akun }}</span>
@@ -61,6 +61,25 @@
                   <td>{{ $pengeluaran->peruntukan->nama ?? '-' }}</td>
                   <td>
                     <div class="d-flex gap-1 flex-wrap">
+                      {{-- Lampiran Button --}}
+                      @if ($pengeluaran->lampiran)
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-view-lampiran"
+                          data-lampiran="{{ asset('storage/' . $pengeluaran->lampiran) }}"
+                          data-nomor="{{ $pengeluaran->nomor_transaksi }}"
+                          data-type="{{ pathinfo($pengeluaran->lampiran, PATHINFO_EXTENSION) }}" title="Lihat Lampiran">
+                          <i data-lucide="paperclip" class="w-4 h-4"></i>
+                        </button>
+                        @if ($pengeluaran->isUnpaid())
+                          <form action="{{ route('pengeluaran.delete-lampiran', $pengeluaran->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-delete-lampiran" title="Hapus Lampiran">
+                              <i data-lucide="file-x" class="w-4 h-4"></i>
+                            </button>
+                          </form>
+                        @endif
+                      @endif
+
                       {{-- Payment Button - Only for unpaid --}}
                       @if ($pengeluaran->isUnpaid())
                         <a class="btn btn-sm btn-success text-white"
@@ -111,10 +130,79 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal Lampiran -->
+  <div class="modal fade" id="modalLampiran" tabindex="-1" aria-labelledby="modalLampiranLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLampiranLabel">Lampiran</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center" id="lampiranContent">
+          <!-- Content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-primary" id="btnDownloadLampiran" target="_blank">
+            <i data-lucide="download" class="w-4 h-4 me-2"></i> Download
+          </a>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 
 @section('scripts')
   <script>
     lucide.createIcons();
+
+    $(document).ready(function () {
+      // View Lampiran
+      $('.btn-view-lampiran').on('click', function () {
+        const lampiran = $(this).data('lampiran');
+        const nomor = $(this).data('nomor');
+        const type = $(this).data('type').toLowerCase();
+        const imageTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+        $('#modalLampiranLabel').text('Lampiran - ' + nomor);
+        $('#btnDownloadLampiran').attr('href', lampiran);
+
+        if (imageTypes.includes(type)) {
+          $('#lampiranContent').html('<img src="' + lampiran + '" class="img-fluid rounded" alt="Lampiran">');
+        } else {
+          $('#lampiranContent').html(
+            '<div class="py-5">' +
+            '<i data-lucide="file-text" style="width: 64px; height: 64px;" class="text-muted mb-3"></i>' +
+            '<p class="text-muted mb-0">File dokumen tidak dapat ditampilkan preview.</p>' +
+            '<p class="text-muted">Klik tombol Download untuk mengunduh file.</p>' +
+            '</div>'
+          );
+          lucide.createIcons();
+        }
+
+        $('#modalLampiran').modal('show');
+      });
+
+      // Delete Lampiran
+      $('.btn-delete-lampiran').on('click', function (e) {
+        e.preventDefault();
+        var form = $(this).closest('form');
+        Swal.fire({
+          title: 'Hapus Lampiran?',
+          text: "Lampiran yang dihapus tidak dapat dikembalikan!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
   </script>
 @endsection

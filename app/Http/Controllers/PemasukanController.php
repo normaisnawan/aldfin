@@ -61,6 +61,7 @@ class PemasukanController extends Controller
       'peruntukan_id' => 'nullable|exists:peruntukans,id',
       'jumlah' => 'required|numeric',
       'keterangan' => 'nullable|string',
+      'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:5120',
     ]);
 
     DB::beginTransaction();
@@ -68,6 +69,12 @@ class PemasukanController extends Controller
     try {
       // Generate nomor transaksi
       $nomorTransaksi = Pemasukan::generateNomorTransaksi();
+
+      // Handle file upload
+      $lampiranPath = null;
+      if ($request->hasFile('lampiran')) {
+        $lampiranPath = $request->file('lampiran')->store('lampiran/pemasukan', 'public');
+      }
 
       // Create record in transaksi_keuangans
       $transaksi = TransaksiKeuangan::create([
@@ -91,6 +98,7 @@ class PemasukanController extends Controller
         'user_id' => Auth::id(),
         'jumlah' => $request->jumlah,
         'keterangan' => $request->keterangan,
+        'lampiran' => $lampiranPath,
         'status' => 'paid',
         'paid_at' => now(),
         'transaksi_keuangan_id' => $transaksi->id,
@@ -156,5 +164,19 @@ class PemasukanController extends Controller
     $pemasukan->load(['akun', 'outlet', 'peruntukan']);
     $title = $this->title;
     return view('pemasukan.print', compact('pemasukan', 'title'));
+  }
+
+  /**
+   * Delete lampiran from pemasukan.
+   */
+  public function deleteLampiran(Pemasukan $pemasukan)
+  {
+    if ($pemasukan->lampiran) {
+      \Illuminate\Support\Facades\Storage::disk('public')->delete($pemasukan->lampiran);
+      $pemasukan->update(['lampiran' => null]);
+      return redirect()->back()->with('success', 'Lampiran berhasil dihapus.');
+    }
+
+    return redirect()->back()->with('error', 'Tidak ada lampiran yang dapat dihapus.');
   }
 }

@@ -84,7 +84,7 @@
             </div>
             <div class="col-md-2">
               <label class="form-label small">Akun</label>
-              <select class="form-select" name="akun_id">
+              <select class="form-select select2-filter" name="akun_id">
                 <option value="">Semua Akun</option>
                 @foreach ($akuns as $akun)
                   <option value="{{ $akun->id }}" {{ $akunId == $akun->id ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
             </div>
             <div class="col-md-2">
               <label class="form-label small">Outlet</label>
-              <select class="form-select" name="outlet_id">
+              <select class="form-select select2-filter" name="outlet_id">
                 <option value="">Semua Outlet</option>
                 @foreach ($outlets as $outlet)
                   <option value="{{ $outlet->id }}" {{ $outletId == $outlet->id ? 'selected' : '' }}>
@@ -124,7 +124,7 @@
           <div class="row g-3 mt-1">
             <div class="col-md-2">
               <label class="form-label small">Peruntukan</label>
-              <select class="form-select" name="peruntukan_id">
+              <select class="form-select select2-filter" name="peruntukan_id">
                 <option value="">Semua Peruntukan</option>
                 @foreach ($peruntukans as $peruntukan)
                   <option value="{{ $peruntukan->id }}" {{ $peruntukanId == $peruntukan->id ? 'selected' : '' }}>
@@ -233,6 +233,18 @@
 @section('scripts')
   <script>
     lucide.createIcons();
+
+    // Initialize Select2 for filters
+    $(document).ready(function () {
+      $('.select2-filter').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        allowClear: true,
+        placeholder: function () {
+          return $(this).data('placeholder') || 'Pilih...';
+        }
+      });
+    });
 
     // Chart by Date
     const chartByDateCtx = document.getElementById('chartByDate').getContext('2d');

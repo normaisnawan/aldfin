@@ -87,7 +87,7 @@
             </div>
             <div class="col-md-2">
               <label class="form-label small">Akun</label>
-              <select class="form-select" name="akun_id">
+              <select class="form-select select2-filter" name="akun_id">
                 <option value="">Semua Akun</option>
                 @foreach ($akuns as $akun)
                   <option value="{{ $akun->id }}" {{ $akunId == $akun->id ? 'selected' : '' }}>
@@ -98,7 +98,7 @@
             </div>
             <div class="col-md-2">
               <label class="form-label small">Outlet</label>
-              <select class="form-select" name="outlet_id">
+              <select class="form-select select2-filter" name="outlet_id">
                 <option value="">Semua Outlet</option>
                 @foreach ($outlets as $outlet)
                   <option value="{{ $outlet->id }}" {{ $outletId == $outlet->id ? 'selected' : '' }}>
@@ -109,7 +109,7 @@
             </div>
             <div class="col-md-2">
               <label class="form-label small">Status</label>
-              <select class="form-select" name="status">
+              <select class="form-select select2-filter" name="status">
                 <option value="">Semua Status</option>
                 <option value="paid" {{ $status == 'paid' ? 'selected' : '' }}>Paid</option>
                 <option value="unpaid" {{ $status == 'unpaid' ? 'selected' : '' }}>Unpaid</option>
@@ -135,7 +135,7 @@
             </div>
             <div class="col-md-2">
               <label class="form-label small">Peruntukan</label>
-              <select class="form-select" name="peruntukan_id">
+              <select class="form-select select2-filter" name="peruntukan_id">
                 <option value="">Semua Peruntukan</option>
                 @foreach ($peruntukans as $peruntukan)
                   <option value="{{ $peruntukan->id }}" {{ $peruntukanId == $peruntukan->id ? 'selected' : '' }}>
@@ -180,15 +180,15 @@
         </div>
       </div>
       <!-- <div class="col-lg-3 mb-3">
-                  <div class="card shadow-sm h-100">
-                    <div class="card-header bg-white">
-                      <h6 class="mb-0"><i data-lucide="activity" class="w-4 h-4 me-2"></i> Status Pembayaran</h6>
+                    <div class="card shadow-sm h-100">
+                      <div class="card-header bg-white">
+                        <h6 class="mb-0"><i data-lucide="activity" class="w-4 h-4 me-2"></i> Status Pembayaran</h6>
+                      </div>
+                      <div class="card-body">
+                        <canvas id="chartByStatus" height="200"></canvas>
+                      </div>
                     </div>
-                    <div class="card-body">
-                      <canvas id="chartByStatus" height="200"></canvas>
-                    </div>
-                  </div>
-                </div> -->
+                  </div> -->
     </div>
 
     <div class="row mb-4">
@@ -266,6 +266,18 @@
 @section('scripts')
   <script>
     lucide.createIcons();
+
+    // Initialize Select2 for filters
+    $(document).ready(function () {
+      $('.select2-filter').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        allowClear: true,
+        placeholder: function () {
+          return $(this).data('placeholder') || 'Pilih...';
+        }
+      });
+    });
 
     // Chart by Date
     const chartByDateCtx = document.getElementById('chartByDate').getContext('2d');
